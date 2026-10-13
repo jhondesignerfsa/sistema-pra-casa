@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, User, Key, Shield, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
-import { queryAll } from '../db/database';
+import { queryAll, forceResetToOperaDB } from '../db/database';
 import { Representante } from '../types';
 
 export interface UserSession {
@@ -32,7 +32,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
 
   const loadReps = async () => {
     try {
-      const reps = await queryAll<Representante>('SELECT * FROM representante ORDER BY nome_razao ASC');
+      let reps = await queryAll<Representante>('SELECT * FROM representante ORDER BY nome_razao ASC');
+      if (reps.length === 0) {
+        // Tenta sincronizar banco oficial do Opera automaticamente
+        await forceResetToOperaDB();
+        reps = await queryAll<Representante>('SELECT * FROM representante ORDER BY nome_razao ASC');
+      }
       setRepresentantes(reps);
       if (reps.length > 0) {
         setSelectedRepId(reps[0].id);

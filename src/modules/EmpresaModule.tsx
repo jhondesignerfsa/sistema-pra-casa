@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Save, ShieldAlert, CheckCircle, RefreshCw } from 'lucide-react';
-import { queryOne, execute } from '../db/database';
+import { Building2, Save, ShieldAlert, CheckCircle, RefreshCw, Database } from 'lucide-react';
+import { queryOne, execute, forceResetToOperaDB } from '../db/database';
 import { Empresa } from '../types';
 import { maskCNPJ, maskCPF, maskPhone } from '../utils/formatters';
 
@@ -271,6 +271,43 @@ export const EmpresaModule: React.FC = () => {
                 className="input-field"
               />
             </div>
+          </div>
+        </div>
+
+        <div className="glass-panel p-5 rounded-xl space-y-4 border border-amber-500/30 bg-amber-950/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-amber-400" />
+              <h3 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                Sincronização & Banco de Dados Oficial (Opera GX)
+              </h3>
+            </div>
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 font-semibold">
+              Dados Gravados no Git
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-300 leading-relaxed">
+            Todos os dados que você cadastrou no navegador Opera (Representante <strong>Joedson REP-614</strong>, 
+            catálogo de 13 produtos com preços de caixa corretos, 4 clientes de supermercado, 3 pedidos emitidos e estoques) 
+            estão salvos e integrados ao sistema online. Caso seu navegador esteja usando uma versão antiga em cache, você pode 
+            forçar a restauração imediata do banco oficial abaixo.
+          </p>
+
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={async () => {
+                if (window.confirm('Deseja recarregar o banco de dados oficial cadastrado no Opera? Seus dados serão atualizados com sucesso.')) {
+                  setSaving(true);
+                  await forceResetToOperaDB();
+                }
+              }}
+              className="btn-secondary !text-amber-300 !border-amber-500/40 hover:!bg-amber-500/20 text-xs py-2 px-4 flex items-center gap-2"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
+              <span>Restaurar / Sincronizar Banco Oficial do Opera</span>
+            </button>
           </div>
         </div>
 
