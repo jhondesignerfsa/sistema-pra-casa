@@ -1,0 +1,28 @@
+{
+  "appId": "com.pracasa.gestaocomercial",
+  "productName": "PraCasa Gestão Comercial",
+  "copyright": "Copyright © 2026 Tempero PraCasa Fábrica de Molhos e Especiarias",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*"
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "requestedExecutionLevel": "asInvoker"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "PraCasa Gestão Comercial"
+  }
+}

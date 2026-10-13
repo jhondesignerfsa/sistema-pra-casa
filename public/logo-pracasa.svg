@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 320" width="100%" height="100%">
+  <defs>
+    <!-- Badge Gradient -->
+    <radialGradient id="badgeGlow" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#E11D48"/>
+      <stop offset="35%" stop-color="#DC2626"/>
+      <stop offset="75%" stop-color="#991B1B"/>
+      <stop offset="100%" stop-color="#6B0202"/>
+    </radialGradient>
+    <linearGradient id="glossHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.45"/>
+      <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0"/>
+    </linearGradient>
+    <radialGradient id="sealGradient" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="60%" stop-color="#B91C1C"/>
+      <stop offset="100%" stop-color="#7F1D1D"/>
+    </radialGradient>
+    <filter id="badgeShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Group with shadow -->
+  <g filter="url(#badgeShadow)">
+    <!-- Main Curvilinear Badge -->
+    <path d="M 65 140 
+             C 45 80, 110 40, 200 45 
+             C 280 50, 340 70, 390 60
+             C 435 52, 470 95, 460 145
+             C 450 190, 410 215, 340 215
+             C 270 215, 230 230, 165 235
+             C 95 240, 50 195, 65 140 Z" 
+          fill="url(#badgeGlow)" 
+          stroke="#EF4444" 
+          stroke-width="3"/>
+
+    <!-- Glossy Upper Reflection -->
+    <path d="M 85 130 
+             C 75 85, 125 55, 195 58 
+             C 265 62, 325 78, 385 70
+             C 415 66, 440 95, 435 125
+             C 380 95, 300 85, 210 82
+             C 140 80, 95 105, 85 130 Z" 
+          fill="url(#glossHighlight)"/>
+
+    <!-- Circular Seal (House Icon) -->
+    <g transform="translate(355, 75)">
+      <!-- Outer Seal Ring -->
+      <circle cx="0" cy="0" r="48" fill="url(#sealGradient)" stroke="#FFFFFF" stroke-width="3" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))"/>
+      <circle cx="0" cy="0" r="45" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.5"/>
+      <!-- House Silhouette -->
+      <g stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <!-- Roof -->
+        <polyline points="-26, -2 0, -26 26, -2" />
+        <!-- Chimney -->
+        <line x1="16" y1="-17" x2="16" y2="-28" />
+        <line x1="16" y1="-28" x2="22" y2="-28" />
+        <line x1="22" y1="-28" x2="22" y2="-9" />
+        <!-- Walls & Floor -->
+        <rect x="-18" y="-2" width="36" height="26" rx="2" />
+      </g>
+    </g>
+
+    <!-- 'PraCasa' Lettering -->
+    <!-- Stylized vector representation of PraCasa -->
+    <text x="235" y="172" 
+          font-family="'Arial Black', 'Montserrat Black', 'Impact', sans-serif" 
+          font-size="82" 
+          font-weight="900" 
+          text-anchor="middle" 
+          fill="#FFFFFF" 
+          stroke="#450A0A" 
+          stroke-width="5" 
+          paint-order="stroke fill"
+          letter-spacing="-1px"
+          transform="rotate(-4 235 160)">
+      PraCasa
+    </text>
+  </g>
+
+  <!-- Tagline / Slogan: O verdadeiro sabor caseiro! -->
+  <g transform="translate(245, 272)">
+    <text x="0" y="0" 
+          font-family="'Segoe Script', 'Segoe Print', cursive, 'Brush Script MT'" 
+          font-size="24" 
+          font-weight="bold" 
+          font-style="italic" 
+          text-anchor="middle" 
+          fill="#991B1B">
+      O verdadeiro sabor caseiro!
+    </text>
+    <!-- Brush Stroke underline -->
+    <path d="M -130 12 Q -10 18 120 7 Q 10 14 -130 12 Z" fill="#DC2626"/>
+  </g>
+</svg>

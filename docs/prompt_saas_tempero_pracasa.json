@@ -1,0 +1,734 @@
+{
+  "projeto": {
+    "nome": "PraCasa Gestão Comercial",
+    "empresa": "Tempero PraCasa Fábrica de Molhos e Especiarias",
+    "objetivo": "Desenvolver um sistema desktop de gestão comercial, operacional e de relacionamento entre a fábrica, representantes comerciais e supermercados/clientes atendidos pelos representantes.",
+    "idioma": "Português do Brasil",
+    "moeda": "BRL",
+    "fuso_horario": "America/Bahia",
+    "formato_data": "DD/MM/AAAA",
+    "diretriz_principal": "Entregue um aplicativo funcional, instalável e persistente, não apenas um protótipo visual. Implemente os fluxos de ponta a ponta, validações, banco de dados, anexos, relatórios, exportações, testes e documentação."
+  },
+  "instrucoes_anti_gravity": {
+    "papel": "Atue como engenheiro de software sênior, arquiteto de sistemas, designer UX/UI e especialista em sistemas comerciais e desktop.",
+    "modo_de_trabalho": [
+      "Antes de implementar, inspecione o ambiente do projeto e apresente um plano técnico curto.",
+      "Implemente o sistema por módulos, mantendo uma aplicação executável a cada etapa.",
+      "Não substitua funcionalidades reais por botões sem ação, dados falsos permanentes ou telas meramente demonstrativas.",
+      "Use dados de demonstração apenas em um modo explicitamente identificado como demonstração; permita removê-los sem afetar dados reais.",
+      "Se uma integração exigir credenciais externas, implemente a configuração, explique os requisitos e apresente um modo alternativo seguro; não simule que a integração está conectada.",
+      "Execute testes e corrija erros antes de considerar uma etapa concluída.",
+      "Ao final, forneça instruções de instalação, execução, backup, restauração e uso."
+    ]
+  },
+  "plataforma_e_arquitetura": {
+    "destino": "Aplicativo desktop para computador Windows, com instalador executável.",
+    "sugestao_tecnica": "Preferir Electron com frontend React/TypeScript e banco SQLite local, ou outra arquitetura desktop equivalente que gere instalador Windows estável. Justifique qualquer escolha diferente.",
+    "requisitos": [
+      "Instalação simples no Windows.",
+      "Banco de dados persistente local, que não seja apagado ao fechar ou atualizar o aplicativo.",
+      "Armazenamento de anexos em diretório de dados da aplicação, com referências no banco de dados.",
+      "Separar código, banco de dados, arquivos anexos, logs e backups.",
+      "Não salvar dados importantes somente no navegador, memória ou arquivos temporários.",
+      "Executar sem internet para funções locais essenciais.",
+      "Permitir exportar e importar backups.",
+      "Preparar arquitetura para múltiplos usuários e sincronização futura, sem afirmar que sincronização existe antes de implementá-la.",
+      "Tratar atualização do aplicativo sem sobrescrever banco de dados, documentos ou anexos.",
+      "Criar logs técnicos sem registrar senhas, tokens ou dados pessoais desnecessários."
+    ],
+    "seguranca": [
+      "Aplicar validação no frontend e backend.",
+      "Usar consultas parametrizadas e proteção contra SQL injection.",
+      "Armazenar credenciais e tokens com mecanismos seguros do sistema operacional, quando disponíveis.",
+      "Implementar bloqueio de tela e autenticação local, se habilitados.",
+      "Permissões por perfil: administrador, equipe comercial, financeiro/administrativo e consulta.",
+      "Registrar histórico de ações relevantes: criação, alteração, exclusão, exportação e mudança de status.",
+      "Preferir exclusão lógica para registros comerciais relevantes.",
+      "Implementar política de backup e orientar criptografia dos backups que contenham dados pessoais ou comerciais.",
+      "Observar a LGPD, limitar acessos e permitir correção e exportação de dados conforme aplicável."
+    ]
+  },
+  "interface": {
+    "estilo": "Interface profissional, limpa, moderna, intuitiva e rápida para uso diário de equipe comercial.",
+    "requisitos": [
+      "Menu lateral organizado por módulos.",
+      "Dashboard inicial com indicadores, alertas e tarefas do dia.",
+      "Busca global por representante, supermercado, produto, pedido, nota fiscal e documento.",
+      "Tabelas com busca, filtros, ordenação e paginação.",
+      "Formulários com campos obrigatórios claramente identificados e mensagens de validação em português.",
+      "Máscaras e validações para CPF, CNPJ, telefone, CEP, e-mail e valores monetários.",
+      "Confirmação antes de ações destrutivas.",
+      "Estados claros de carregamento, sucesso, erro e ausência de resultados.",
+      "Layout adaptável a diferentes resoluções de monitor.",
+      "Atalhos para novo pedido, novo cliente, novo representante e anexar documento.",
+      "Não usar informações de exemplo como se fossem dados reais."
+    ]
+  },
+  "modulos": {
+    "dashboard": {
+      "objetivo": "Apresentar a situação da operação e as ações prioritárias.",
+      "indicadores": [
+        "Pedidos do dia, da semana e do mês.",
+        "Valor total de pedidos por status.",
+        "Vendas por representante e por período.",
+        "Produtos com estoque baixo ou negativo.",
+        "Clientes com recompra prevista ou atrasada.",
+        "Pedidos aguardando aprovação, faturamento ou entrega.",
+        "Notas fiscais pendentes de associação ou conferência.",
+        "Comissões estimadas, liberadas e pagas.",
+        "Contratos pendentes de preenchimento, assinatura ou renovação.",
+        "Tarefas e contatos agendados para hoje."
+      ],
+      "regras": [
+        "Todo indicador deve abrir a lista filtrada que o originou.",
+        "Permitir filtrar por intervalo de datas, representante, cliente e produto.",
+        "Mostrar a data da última atualização dos dados."
+      ]
+    },
+    "empresa_e_configuracoes": {
+      "campos": [
+        "Razão social",
+        "Nome fantasia",
+        "CNPJ",
+        "Endereço completo",
+        "Telefone e WhatsApp",
+        "E-mail",
+        "Responsável legal",
+        "Cargo",
+        "CPF do responsável",
+        "Logotipo",
+        "Dados para emissão dos documentos",
+        "Preferências de comissão, estoque, alertas e backups"
+      ],
+      "observacao": "Os dados iniciais dos documentos enviados devem ser pré-carregados como editáveis e precisam ser confirmados antes de serem usados em contratos. Não presumir que o CNPJ, a razão social ou outros dados do modelo estejam juridicamente conferidos."
+    },
+    "produtos": {
+      "campos": [
+        "SKU/código interno único",
+        "Nome comercial",
+        "Descrição",
+        "Categoria",
+        "Marca",
+        "Unidade de venda",
+        "Peso líquido",
+        "Unidade de estoque",
+        "Conversão entre caixas, pacotes, unidades e quilos",
+        "Código de barras opcional",
+        "Preço de tabela",
+        "Custo opcional com acesso restrito",
+        "Preço mínimo autorizado opcional",
+        "Status ativo/inativo",
+        "Estoque mínimo",
+        "Lote e validade, quando aplicável",
+        "Imagem do produto",
+        "Observações"
+      ],
+      "funcionalidades": [
+        "Criar, editar, consultar, arquivar e pesquisar produtos.",
+        "Importar catálogo por CSV/XLSX com pré-visualização, validação e relatório de erros.",
+        "Exportar catálogo e tabela de preços em CSV/XLSX/PDF.",
+        "Manter histórico de alterações de preço.",
+        "Não permitir que alteração de nome ou preço modifique retroativamente pedidos já emitidos."
+      ]
+    },
+    "representantes": {
+      "campos_pessoais_ou_empresariais": [
+        "Tipo: pessoa física ou pessoa jurídica",
+        "Nome completo ou razão social",
+        "Nome fantasia",
+        "CPF/CNPJ",
+        "RG, se necessário",
+        "Data de nascimento, se necessária",
+        "Endereço completo",
+        "Telefone",
+        "WhatsApp",
+        "E-mail",
+        "CORE: número e UF",
+        "Dados do representante legal, quando pessoa jurídica",
+        "Dados bancários ou chave Pix somente se necessários e com acesso restrito",
+        "Território: municípios, estados e regiões",
+        "Exclusividade territorial: sim/não e condições",
+        "Exclusividade em relação a outras representadas: sim/não e condições",
+        "Permissão e regras para vendas diretas na região",
+        "Percentual de comissão acordado",
+        "Data de início",
+        "Status: prospecto, documentação pendente, ativo, suspenso ou encerrado",
+        "Documentos anexados",
+        "Observações internas"
+      ],
+      "funcionalidades": [
+        "Ficha completa e histórico do representante.",
+        "Vincular supermercados, pedidos, vendas, notas, anexos, comissões e contratos.",
+        "Registrar contatos, reuniões, mensagens e tarefas.",
+        "Alertar sobre documentos pendentes ou vencimentos configurados.",
+        "Permitir desativar sem apagar o histórico.",
+        "Importar e exportar cadastro."
+      ]
+    },
+    "clientes_supermercados": {
+      "campos": [
+        "Código interno",
+        "Razão social",
+        "Nome fantasia",
+        "CNPJ/CPF conforme aplicável",
+        "Inscrição estadual quando aplicável",
+        "Endereço de cada loja/unidade",
+        "Cidade, UF e CEP",
+        "Contato responsável por compras",
+        "Telefone e WhatsApp",
+        "E-mail",
+        "Horário e instruções de recebimento",
+        "Representante responsável",
+        "Condições comerciais autorizadas",
+        "Condições de pagamento",
+        "Modalidade de entrega ou retirada",
+        "Status ativo/inativo",
+        "Data da primeira compra",
+        "Última compra",
+        "Observações e histórico de atendimento"
+      ],
+      "funcionalidades": [
+        "Suportar redes com várias filiais, mantendo a matriz e as unidades separadas.",
+        "Detectar possíveis duplicidades por CNPJ e endereço.",
+        "Manter histórico de produtos comprados, quantidades, preços, pedidos e notas.",
+        "Permitir transferir a carteira entre representantes com histórico e trilha de auditoria.",
+        "Registrar consentimentos e preferências de contato quando aplicável."
+      ]
+    },
+    "pedidos_e_vendas": {
+      "campos": [
+        "Número único do pedido",
+        "Data e hora",
+        "Representante",
+        "Cliente e unidade",
+        "Produtos, unidades, quantidades, preço unitário e desconto autorizado",
+        "Subtotal, frete, total e condições comerciais",
+        "Data solicitada de entrega",
+        "Observações",
+        "Anexos",
+        "Status",
+        "Origem do pedido",
+        "Referência externa opcional"
+      ],
+      "status_sugeridos": [
+        "Rascunho",
+        "Enviado para análise",
+        "Aguardando aprovação",
+        "Aprovado",
+        "Recusado",
+        "Aguardando estoque",
+        "Aguardando faturamento",
+        "Faturado",
+        "Em separação",
+        "Enviado/Em entrega",
+        "Entregue",
+        "Parcialmente entregue",
+        "Cancelado",
+        "Devolvido"
+      ],
+      "funcionalidades": [
+        "Criar pedido pela equipe interna ou registrar pedido recebido do representante.",
+        "Duplicar pedido anterior para facilitar recompra.",
+        "Gerar PDF de pedido com identidade visual da empresa.",
+        "Enviar resumo do pedido pelo WhatsApp após revisão do usuário.",
+        "Controlar alterações com histórico e usuário responsável.",
+        "Vincular pedido a nota fiscal, pagamento e entrega.",
+        "Permitir importação de pedidos e vendas históricas por planilha.",
+        "Mostrar claramente se uma venda é informada pelo representante, confirmada pela fábrica ou comprovada por documento."
+      ],
+      "regras": [
+        "Validar estoque e regras comerciais antes de aprovar.",
+        "Não tratar pedido como venda faturada até que o status e os documentos necessários confirmem isso.",
+        "Não duplicar movimentos de estoque ao reimportar ou editar um pedido.",
+        "Registrar motivo para recusa, cancelamento, devolução ou alteração relevante.",
+        "Permitir pedidos com itens em unidades diferentes, com conversões explícitas."
+      ]
+    },
+    "estoque": {
+      "principio": "Manter estoques separados por local e proprietário. Não misturar estoque da fábrica, estoque consignado, estoque em posse do representante e estoque do supermercado.",
+      "locais_de_estoque": [
+        "Fábrica/depósito",
+        "Estoque sob responsabilidade do representante, se aplicável",
+        "Estoque consignado, se aplicável",
+        "Outros depósitos configuráveis"
+      ],
+      "movimentacoes": [
+        "Saldo inicial",
+        "Entrada por compra ou produção",
+        "Transferência entre locais",
+        "Saída por venda/entrega",
+        "Devolução",
+        "Perda/avaria",
+        "Ajuste de inventário",
+        "Reserva de pedido",
+        "Liberação de reserva"
+      ],
+      "campos_movimento": [
+        "Produto",
+        "Quantidade e unidade original",
+        "Quantidade convertida na unidade-base",
+        "Local de origem e destino",
+        "Data",
+        "Tipo de movimento",
+        "Pedido ou nota relacionada",
+        "Responsável",
+        "Motivo",
+        "Anexo/comprovante",
+        "Lote e validade quando aplicável"
+      ],
+      "funcionalidades": [
+        "Exibir saldo atual e histórico de movimentação por produto e local.",
+        "Mostrar entradas, saídas, saldo e divergências.",
+        "Alertar estoque mínimo, validade próxima e estoque negativo.",
+        "Permitir inventário e ajuste com justificativa.",
+        "Permitir registrar o estoque inicial do representante e suas prestações de contas.",
+        "Comparar estoque teórico com contagem física informada.",
+        "Registrar venda de produto pelo representante e descontar o local correto apenas quando a movimentação estiver confirmada.",
+        "Não presumir que todo representante possui mercadoria em estoque: permitir o modelo de operação por intermediação de pedidos sem posse de produtos.",
+        "Separar quantidade vendida ao supermercado de quantidade efetivamente entregue."
+      ]
+    },
+    "vendas_historicas_e_importacao": {
+      "objetivo": "Receber vendas já realizadas pelos representantes, mesmo antes da implantação do sistema.",
+      "formatos": [
+        "CSV",
+        "XLSX",
+        "PDF para arquivo e revisão",
+        "Digitação manual"
+      ],
+      "processo": [
+        "Selecionar representante e período.",
+        "Carregar arquivo.",
+        "Mapear colunas para cliente, produto, data, quantidade, valor e documento.",
+        "Pré-visualizar registros e erros.",
+        "Detectar possíveis duplicidades.",
+        "Solicitar confirmação antes de importar.",
+        "Gerar relatório de importação concluída, ignorada e rejeitada.",
+        "Permitir vincular vendas a pedidos, notas fiscais e movimentos de estoque."
+      ],
+      "regras": [
+        "Não extrair automaticamente dados de PDF como se fossem confiáveis sem permitir revisão.",
+        "Registrar origem e nível de conferência de cada venda.",
+        "Não descontar estoque se a venda histórica não indicar qual estoque foi utilizado ou se não houver confirmação.",
+        "Manter os arquivos originais anexados à importação."
+      ]
+    },
+    "notas_fiscais_e_documentos": {
+      "funcionalidades": [
+        "Anexar XML, PDF, imagem ou outro arquivo de nota fiscal.",
+        "Relacionar a nota a pedido, cliente, representante e movimentação de estoque.",
+        "Cadastrar chave de acesso, número, série, data de emissão, valor e emitente/destinatário quando conhecidos.",
+        "Permitir anexar DANFE e XML separadamente.",
+        "Sinalizar documento sem vínculo, duplicado ou pendente de conferência.",
+        "Visualizar, baixar, abrir e exportar anexos.",
+        "Guardar o arquivo original sem alteração."
+      ],
+      "importacao": "Quando viável, ler XML de NF-e para preencher campos estruturados. Validar e permitir revisão antes de gravar. Não alegar emissão ou validação fiscal oficial sem integração fiscal apropriada.",
+      "observacao": "O sistema organiza documentos fiscais, mas não substitui software fiscal ou contador."
+    },
+    "contratos_e_documentos_pdf": {
+      "documentos_base": [
+        {
+          "nome": "Contrato de Representação Comercial Autônoma",
+          "arquivo_de_referencia": "Contrato_Representacao_Comercial_Tempero_PraCasa.docx",
+          "dados_a_preencher": [
+            "Razão social e CNPJ da representada",
+            "Endereço da representada",
+            "Nome, cargo e CPF do representante legal da fábrica",
+            "Nome ou razão social do representante",
+            "CPF/CNPJ e endereço completo do representante",
+            "CORE e UF",
+            "Dados do representante legal, se pessoa jurídica",
+            "Território de atuação",
+            "Exclusividade territorial e comercial",
+            "Regras de vendas diretas na região",
+            "Percentual de comissão",
+            "Data de início",
+            "Local e data de assinatura",
+            "Nome e CPF das testemunhas"
+          ],
+          "regras": [
+            "Preservar a estrutura, a terminologia e as cláusulas do modelo aprovado.",
+            "Substituir apenas os campos variáveis autorizados.",
+            "Manter opção de revisão manual antes da exportação.",
+            "Gerar PDF pronto para impressão e assinatura.",
+            "Salvar a versão final e o arquivo editável, quando possível, na ficha do representante.",
+            "Guardar versão do modelo, data de geração e dados usados.",
+            "Permitir registrar status: rascunho, revisão, aprovado, enviado, assinado ou encerrado.",
+            "Não inserir assinatura digital como se fosse válida sem integração apropriada.",
+            "Avisar quando houver campos obrigatórios não preenchidos."
+          ]
+        },
+        {
+          "nome": "Contrato de Fornecimento",
+          "arquivo_de_referencia": "CONTRATO DE FORNECIMENTO PRACASA.docx",
+          "dados_a_preencher": [
+            "Razão social do cliente/fornecedor conforme o papel definido no contrato",
+            "CNPJ",
+            "Endereço completo",
+            "Cidade e estado",
+            "Cargo e nome do representante legal",
+            "Nacionalidade, estado civil, profissão, RG e CPF quando exigidos pelo modelo",
+            "Produtos ou categorias contratadas",
+            "Prazo e condições de pagamento",
+            "Condições de frete e entrega/retirada",
+            "Política de troca por avaria",
+            "Data e local de assinatura",
+            "Assinaturas e testemunhas"
+          ],
+          "regras": [
+            "Preservar as cláusulas do modelo aprovado e preencher apenas campos autorizados.",
+            "Permitir revisão e edição controlada antes da exportação.",
+            "Gerar PDF para impressão e assinatura.",
+            "Armazenar versão gerada e documentos assinados na ficha do cliente.",
+            "Permitir configurar qual parte é fornecedor e qual parte é cliente, sem trocar os papéis automaticamente."
+          ]
+        }
+      ],
+      "funcionalidades_gerais": [
+        "Gerador de PDF com layout profissional, paginação, margens e assinaturas.",
+        "Pré-visualização antes de exportar.",
+        "Campos faltantes destacados.",
+        "Histórico de versões do documento.",
+        "Anexar PDF assinado, escaneado ou fotografado.",
+        "Não modificar documentos já assinados; criar nova versão para alterações.",
+        "Permitir anexar outros documentos e termos."
+      ],
+      "alertas_juridicos": [
+        "Os modelos contêm pontos a validar antes da assinatura; manter uma lista de pendências configurável.",
+        "Não decidir automaticamente questões jurídicas nem afirmar que o contrato está juridicamente validado.",
+        "Solicitar revisão profissional dos modelos e dos dados cadastrais antes do uso real."
+      ]
+    },
+    "comissoes_e_financeiro": {
+      "funcionalidades": [
+        "Configurar comissão por representante, contrato, produto, cliente ou regra comercial, conforme necessidade.",
+        "Usar 10% apenas como valor inicial sugerido pelo modelo de representação enviado, sujeito à confirmação e ao contrato aprovado.",
+        "Calcular comissão estimada, adquirida, pendente, paga, estornada ou em conferência.",
+        "Registrar recebimentos integrais ou parcelados e calcular a comissão conforme as regras contratuais configuradas.",
+        "Gerar demonstrativo por representante e período.",
+        "Vincular comissão a pedido, fatura/nota e recebimento.",
+        "Exportar demonstrativo em PDF e CSV/XLSX.",
+        "Registrar data prevista, data paga, valor, forma de pagamento e comprovante.",
+        "Impedir pagamentos duplicados sem aviso e confirmação.",
+        "Manter histórico de ajustes, estornos e justificativas."
+      ],
+      "regras": [
+        "Não considerar automaticamente todo pedido como comissionável.",
+        "Permitir que o administrador configure a base de cálculo conforme contrato revisado.",
+        "Distinguir frete, desconto, devolução, cancelamento e recebimentos parciais.",
+        "Sinalizar divergências entre vendas registradas, notas fiscais, recebimentos e demonstrativos."
+      ]
+    },
+    "alertas_de_recompra": {
+      "objetivo": "Estimar quando cada supermercado pode precisar repor produtos com base em vendas anteriores, consumo estimado e estoque conhecido.",
+      "dados_utilizados": [
+        "Cliente/unidade",
+        "Produto",
+        "Quantidade entregue/vendida",
+        "Data da última compra",
+        "Intervalo entre compras",
+        "Estoque informado pelo supermercado, quando disponível",
+        "Média de consumo estimada",
+        "Prazo de entrega",
+        "Sazonalidade ou ajuste manual opcional"
+      ],
+      "regras": [
+        "Permitir configurar intervalo padrão de recompra por produto e cliente.",
+        "Usar 15 dias como exemplo inicial configurável, não como regra universal.",
+        "Se houver histórico suficiente, estimar intervalo médio de recompra por cliente/produto e mostrar a base do cálculo.",
+        "Se não houver histórico suficiente, usar regra manual configurada e indicar que é estimativa.",
+        "Gerar alertas como: 'Possível reposição: verificar estoque de sal 1 kg no Supermercado X'.",
+        "Permitir snooze, concluir, dispensar, reagendar e registrar resultado do contato.",
+        "Evitar alertas duplicados para o mesmo cliente/produto/período.",
+        "Priorizar alertas vencidos e clientes com maior risco de ruptura.",
+        "Não afirmar que o estoque do supermercado está acabando sem contagem ou dado confiável; distinguir previsão de estoque confirmado."
+      ],
+      "fluxo_de_reposicao": [
+        "O sistema gera um alerta de possível recompra.",
+        "A equipe revisa o histórico e contata o cliente.",
+        "O usuário registra estoque informado, interesse e quantidade sugerida.",
+        "O usuário cria um pedido ou solicita pedido ao representante.",
+        "O representante recebe o resumo por canal disponível.",
+        "A equipe acompanha aprovação, faturamento, entrega e conclusão do alerta."
+      ]
+    },
+    "whatsapp_e_comunicacao": {
+      "objetivo": "Facilitar contato individual com representantes e clientes a partir de seus cadastros.",
+      "funcionalidades": [
+        "Botão para abrir conversa com número cadastrado no WhatsApp/WhatsApp Web.",
+        "Botões de mensagem predefinida para pedir relatório de vendas, solicitar contagem de estoque, avisar sobre pedido, enviar demonstrativo de comissão e lembrar documentos pendentes.",
+        "Permitir editar a mensagem antes de abrir o WhatsApp.",
+        "Registrar no sistema data, destinatário, assunto e usuário que iniciou o contato.",
+        "Não afirmar que uma mensagem foi enviada ou lida quando o sistema apenas abriu o WhatsApp.",
+        "Permitir copiar texto e gerar PDF/anexo para o usuário enviar manualmente."
+      ],
+      "integracao_oficial_opcional": [
+        "Projetar integração futura com WhatsApp Business Platform/API oficial, mediante credenciais e configuração da empresa.",
+        "Antes de implementar envio automático, explicar requisitos, custos, modelos aprovados e limitações aplicáveis.",
+        "Não armazenar tokens em texto simples.",
+        "Não utilizar automação não autorizada do WhatsApp Web nem prometer envio automático sem uma integração efetivamente funcional."
+      ],
+      "modelos_de_mensagem": [
+        "Olá, [nome]. Tudo bem? Pode nos enviar a atualização das vendas e do estoque dos produtos da PraCasa?",
+        "Olá, [nome]. Temos uma possível reposição para o cliente [cliente]. Produto: [produto]. Última compra registrada em [data]. Pode verificar com o cliente a necessidade e a quantidade?",
+        "Olá, [nome]. Seu demonstrativo de comissões referente a [período] está disponível para conferência."
+      ]
+    },
+    "tarefas_e_historico_de_contato": {
+      "funcionalidades": [
+        "Criar tarefas ligadas a representante, cliente, pedido, produto ou documento.",
+        "Definir responsável, prioridade, prazo, lembrete e status.",
+        "Registrar ligação, WhatsApp, reunião, visita, e-mail e observações.",
+        "Exibir agenda diária e lista de atrasos.",
+        "Criar tarefa de acompanhamento a partir de alertas de recompra.",
+        "Permitir concluir ou reagendar sem perder o histórico."
+      ]
+    },
+    "relatorios": {
+      "relatorios_necessarios": [
+        "Vendas por representante e período",
+        "Vendas por cliente/supermercado",
+        "Vendas por produto e categoria",
+        "Pedidos por status",
+        "Produtos mais vendidos",
+        "Clientes sem recompra há determinado período",
+        "Previsão de recompra por cliente/produto",
+        "Estoque por local",
+        "Entradas e saídas por produto",
+        "Divergências de estoque teórico e físico",
+        "Estoque sob responsabilidade de cada representante",
+        "Notas fiscais pendentes de conferência",
+        "Comissões por representante e período",
+        "Contratos ativos, encerrados e pendentes",
+        "Histórico de contato e tarefas",
+        "Importações e registros com divergência"
+      ],
+      "exportacoes": [
+        "PDF",
+        "CSV",
+        "XLSX"
+      ],
+      "regras": [
+        "Todos os relatórios devem permitir filtros de período e campos relevantes.",
+        "Exibir data de geração e filtros utilizados.",
+        "Os totais devem ser calculados a partir dos dados gravados, não de valores fixos."
+      ]
+    },
+    "anexos_e_arquivo_digital": {
+      "tipos": [
+        "PDF",
+        "DOCX",
+        "XLSX",
+        "CSV",
+        "XML",
+        "JPG",
+        "PNG",
+        "WEBP"
+      ],
+      "funcionalidades": [
+        "Anexar arquivo a representante, cliente, pedido, produto, nota fiscal, contrato, comissão ou importação.",
+        "Registrar nome original, data de inclusão, usuário, categoria, tamanho e vínculo.",
+        "Permitir abrir, visualizar, baixar, exportar e localizar anexos.",
+        "Verificar extensão e tamanho permitido e tratar nomes de arquivo com segurança.",
+        "Evitar substituir arquivos silenciosamente.",
+        "Detectar duplicidade por hash quando possível.",
+        "Manter arquivos originais e permitir adicionar versões corrigidas."
+      ]
+    },
+    "auditoria_e_importacao_exportacao": {
+      "funcionalidades": [
+        "Log de alterações relevantes com valores anteriores e novos quando apropriado.",
+        "Exportar dados por módulo em CSV/XLSX.",
+        "Importar dados com mapeamento de colunas, validação e pré-visualização.",
+        "Criar backup completo do banco de dados e anexos.",
+        "Restaurar backup com confirmação, validação e orientação para preservar o estado anterior.",
+        "Executar backup automático configurável e mostrar data do último backup.",
+        "Permitir exportação dos dados para portabilidade."
+      ]
+    }
+  },
+  "modelo_de_dados_minimo": {
+    "entidades": [
+      "Empresa",
+      "Usuario",
+      "PerfilPermissao",
+      "Representante",
+      "RepresentanteTerritorio",
+      "Cliente",
+      "UnidadeCliente",
+      "Contato",
+      "Produto",
+      "CategoriaProduto",
+      "UnidadeMedida",
+      "ConversaoUnidade",
+      "TabelaPreco",
+      "HistoricoPreco",
+      "Pedido",
+      "ItemPedido",
+      "VendaHistorica",
+      "NotaFiscal",
+      "ItemNotaFiscal",
+      "LocalEstoque",
+      "SaldoEstoque",
+      "MovimentoEstoque",
+      "InventarioEstoque",
+      "Contrato",
+      "ModeloDocumento",
+      "VersaoDocumento",
+      "Comissao",
+      "Recebimento",
+      "AlertaRecompra",
+      "Tarefa",
+      "Interacao",
+      "Anexo",
+      "Importacao",
+      "LogAuditoria",
+      "Configuracao",
+      "Backup"
+    ],
+    "regras_de_integridade": [
+      "IDs internos estáveis e relacionamentos com chaves estrangeiras.",
+      "Campos de data armazenados em formato consistente e apresentados em DD/MM/AAAA.",
+      "Valores monetários com precisão decimal adequada, sem erros de ponto flutuante.",
+      "Unidades e conversões explícitas; nunca converter pacote em quilo sem fator definido.",
+      "Movimentos de estoque e pagamentos devem ser rastreáveis e idempotentes.",
+      "Não excluir em cascata histórico comercial essencial.",
+      "Criar índices para pesquisas frequentes por nome, CNPJ, telefone, código, data e status."
+    ]
+  },
+  "regras_de_negocio_criticas": [
+    "Diferenciar representante comercial que apenas intermedeia pedidos de representante que mantém mercadorias sob sua responsabilidade.",
+    "Diferenciar vendas informadas, vendas confirmadas, pedidos aprovados, pedidos faturados e entregas realizadas.",
+    "Manter estoque da fábrica, estoque do representante, estoque consignado e estoque informado pelo supermercado separados.",
+    "A venda ao supermercado não deve baixar automaticamente o estoque da fábrica se o produto já estava no estoque do representante; o movimento correto depende do fluxo de abastecimento definido.",
+    "Permitir que o representante informe estoque inicial, entradas, vendas, devoluções, perdas e saldo contado.",
+    "Calcular estoque teórico: saldo inicial + entradas + transferências recebidas - saídas - transferências enviadas - perdas, considerando os tipos de movimento implementados.",
+    "Gerar alerta de divergência quando estoque teórico e físico diferirem.",
+    "Toda previsão de recompra deve ser identificada como estimativa quando não houver contagem real.",
+    "Comissões precisam seguir a regra e a versão contratual aplicáveis à operação.",
+    "Alterações de preços, comissão e regras comerciais devem preservar o histórico.",
+    "Cada anexo deve estar associado ao registro correto e continuar acessível após reiniciar o aplicativo.",
+    "Nenhuma integração externa deve ser declarada funcional sem teste real de ponta a ponta."
+  ],
+  "requisitos_de_qualidade": {
+    "testes": [
+      "Testes unitários para cálculos de estoque, conversões, comissão, datas e alertas.",
+      "Testes de integração para banco de dados, anexos, importação e exportação.",
+      "Testes de interface para cadastrar representante, cliente, produto, pedido e contrato.",
+      "Teste de geração de PDF para os dois modelos de contrato.",
+      "Teste de exportação e restauração de backup.",
+      "Teste de instalação e inicialização em ambiente Windows limpo, quando possível.",
+      "Teste para garantir que reiniciar o aplicativo não apaga os dados.",
+      "Teste para impedir movimentação de estoque duplicada na importação ou reprocessamento.",
+      "Teste para garantir que a mensagem do WhatsApp não seja marcada como enviada apenas por abrir um link."
+    ],
+    "criterios_de_aceitacao": [
+      "Consigo cadastrar e editar um produto e ele permanece salvo após fechar e abrir o programa.",
+      "Consigo cadastrar um representante e gerar seu contrato em PDF preenchido com os dados cadastrados.",
+      "Consigo cadastrar um supermercado e vinculá-lo ao representante responsável.",
+      "Consigo criar um pedido com vários produtos e exportar o pedido em PDF.",
+      "Consigo anexar nota fiscal, XML, planilha e outros documentos e reabri-los depois.",
+      "Consigo importar vendas históricas, revisar os erros e evitar duplicidades.",
+      "Consigo ver o estoque por local e rastrear cada entrada e saída.",
+      "Consigo configurar um alerta de recompra em 15 dias e receber o alerta na data prevista, sem tratar o prazo como certeza de falta de estoque.",
+      "Consigo gerar relatório de vendas por representante e período.",
+      "Consigo gerar demonstrativo de comissão com base na regra configurada.",
+      "Consigo abrir o WhatsApp para o contato correto e editar a mensagem antes de iniciar a conversa.",
+      "Consigo realizar backup e restaurar os dados e anexos.",
+      "As telas principais não possuem botões sem funcionamento ou dados fictícios apresentados como reais."
+    ]
+  },
+  "entregaveis": [
+    "Código-fonte completo, organizado e documentado.",
+    "Aplicativo desktop funcional.",
+    "Instalador Windows executável.",
+    "Banco de dados inicializado com estrutura e migrações.",
+    "Modelos de PDF para pedido, relatório, demonstrativo de comissão e contratos.",
+    "Importação e exportação implementadas.",
+    "Rotina de backup e restauração.",
+    "Testes automatizados essenciais.",
+    "Arquivo README com pré-requisitos, instalação, execução, atualização e solução de problemas.",
+    "Manual breve de uso em português.",
+    "Lista de integrações que funcionam, integrações que exigem credenciais e limitações conhecidas.",
+    "Lista de pendências que dependem de decisão da empresa."
+  ],
+  "ordem_de_implementacao": [
+    {
+      "fase": 1,
+      "nome": "Base do aplicativo",
+      "itens": [
+        "Arquitetura desktop",
+        "Banco de dados e migrações",
+        "Configurações da empresa",
+        "Autenticação/perfis básicos",
+        "Interface principal",
+        "Backup e restauração iniciais"
+      ]
+    },
+    {
+      "fase": 2,
+      "nome": "Cadastros e documentos",
+      "itens": [
+        "Produtos",
+        "Representantes",
+        "Clientes e unidades",
+        "Anexos",
+        "Geração de PDF dos dois contratos"
+      ]
+    },
+    {
+      "fase": 3,
+      "nome": "Pedidos, vendas e estoque",
+      "itens": [
+        "Pedidos",
+        "Importação de vendas históricas",
+        "Notas fiscais e anexos",
+        "Movimentações e inventário",
+        "Relatórios básicos"
+      ]
+    },
+    {
+      "fase": 4,
+      "nome": "Relacionamento e automações",
+      "itens": [
+        "Alertas de recompra",
+        "Tarefas e histórico de contato",
+        "Atalhos de WhatsApp",
+        "Comissões e demonstrativos"
+      ]
+    },
+    {
+      "fase": 5,
+      "nome": "Validação e distribuição",
+      "itens": [
+        "Testes ponta a ponta",
+        "Correções",
+        "Instalador Windows",
+        "Documentação",
+        "Teste de backup e restauração",
+        "Checklist de entrega"
+      ]
+    }
+  ],
+  "decisoes_que_devem_ficar_configuraveis": [
+    "Percentual e base de cálculo da comissão por representante/contrato.",
+    "Se o representante trabalha apenas por intermediação ou mantém estoque.",
+    "Se há consignação e como ocorre a transferência de propriedade.",
+    "Quais eventos efetivamente baixam cada local de estoque.",
+    "Intervalo de recompra por produto e cliente.",
+    "Prazo de entrega e estoque mínimo.",
+    "Regras de desconto e aprovação de preço.",
+    "Condições de pagamento, frete e entrega.",
+    "Campos obrigatórios e cláusulas dos contratos aprovados.",
+    "Política de backup, acesso e retenção de documentos."
+  ],
+  "instrucoes_finais": [
+    "Comece apresentando o plano técnico e a estrutura de pastas.",
+    "Em seguida, implemente as fases em ordem, mantendo o projeto executável.",
+    "Não entregue somente uma especificação, wireframe ou protótipo.",
+    "Não esconda limitações: sinalize claramente qualquer recurso ainda não implementado.",
+    "Priorize primeiro um fluxo completo e confiável; depois amplie as funcionalidades.",
+    "Antes da entrega final, execute os testes e forneça evidências objetivas do que foi validado."
+  ]
+}
