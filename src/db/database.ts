@@ -1,41 +1,17 @@
 import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
 import { SCHEMA_SQL } from './schema';
+import { INITIAL_DATABASE_B64 } from './initialDataB64';
 
 let dbInstance: SqlJsDatabase | null = null;
 const STORAGE_KEY = 'pracasa_db_binary';
 
-async function loadOfficialDatabaseBytes(): Promise<Uint8Array | null> {
-  // 1. Tenta carregar do static asset /initial_database.sqlite
-  try {
-    const res = await fetch('/initial_database.sqlite');
-    if (res.ok) {
-      const arrayBuf = await res.arrayBuffer();
-      if (arrayBuf.byteLength > 1000) {
-        console.log(`[PraCasa DB] Banco oficial do Opera carregado via fetch (${arrayBuf.byteLength} bytes)`);
-        return new Uint8Array(arrayBuf);
-      }
-    }
-  } catch (e) {
-    console.warn('[PraCasa DB] Fetch /initial_database.sqlite falhou:', e);
+export function getOfficialDatabaseBytes(): Uint8Array {
+  const binaryStr = atob(INITIAL_DATABASE_B64);
+  const bytes = new Uint8Array(binaryStr.length);
+  for (let i = 0; i < binaryStr.length; i++) {
+    bytes[i] = binaryStr.charCodeAt(i);
   }
-
-  // 2. Fallback garantido: importa dinamicamente o base64 compilado
-  try {
-    const mod = await import('./initialDataB64');
-    if (mod && mod.INITIAL_DATABASE_B64) {
-      const binaryStr = atob(mod.INITIAL_DATABASE_B64);
-      const bytes = new Uint8Array(binaryStr.length);
-      for (let i = 0; i < binaryStr.length; i++) {
-        bytes[i] = binaryStr.charCodeAt(i);
-      }
-      console.log(`[PraCasa DB] Banco oficial do Opera carregado via fallback B64 (${bytes.length} bytes)`);
-      return bytes;
-    }
-  } catch (e) {
-    console.error('[PraCasa DB] Erro no fallback B64:', e);
-  }
-
-  return null;
+  return bytes;
 }
 
 function applyMigrations(db: SqlJsDatabase) {
@@ -92,8 +68,7 @@ function applyMigrations(db: SqlJsDatabase) {
 
 export async function forceResetToOperaDB(): Promise<boolean> {
   try {
-    const bytes = await loadOfficialDatabaseBytes();
-    if (!bytes) return false;
+    const bytes = getOfficialDatabaseBytes();
     const SQL = await initSqlJs({ locateFile: () => `/sql-wasm.wasm` });
     dbInstance = new SQL.Database(bytes);
     applyMigrations(dbInstance);
@@ -166,17 +141,12 @@ export async function getDB(): Promise<SqlJsDatabase> {
   }
 
   if (needsOfficialSeed) {
-    const officialBytes = await loadOfficialDatabaseBytes();
-    if (officialBytes) {
-      db = new SQL.Database(officialBytes);
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('pracasa_opera_sync_v2', 'true');
-      }
-      console.log('[PraCasa DB] Banco oficial do Opera carregado com sucesso!');
-    } else if (!db) {
-      db = new SQL.Database();
-      db.run(SCHEMA_SQL);
+    const officialBytes = getOfficialDatabaseBytes();
+    db = new SQL.Database(officialBytes);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('pracasa_opera_sync_v2', 'true');
     }
+    console.log('[PraCasa DB] Banco oficial do Opera carregado com sucesso!');
   }
 
   dbInstance = db!;

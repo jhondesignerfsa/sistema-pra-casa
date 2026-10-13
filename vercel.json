@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|initial_database.sqlite|sql-wasm.wasm|favicon.ico).*)",
       "destination": "/index.html"
     }
   ]

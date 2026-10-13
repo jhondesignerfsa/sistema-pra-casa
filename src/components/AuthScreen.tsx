@@ -263,6 +263,57 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
             </button>
           </form>
 
+          {/* Sincronização e Restauração de Backup */}
+          <div className="pt-3 border-t border-slate-800/80 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <label className="flex-1 cursor-pointer py-1.5 px-2.5 rounded-lg border border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 hover:border-amber-500/40 text-[11px] text-slate-300 flex items-center justify-center gap-1.5 transition-all text-center">
+                <span>📁 Importar Backup (.zip)</span>
+                <input
+                  type="file"
+                  accept=".zip,.txt,.sqlite,.db"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setLoading(true);
+                    setErrorMsg('');
+                    const { restoreBackupFromFile } = await import('../utils/backupRestore');
+                    const res = await restoreBackupFromFile(file);
+                    if (res.success) {
+                      alert(res.message);
+                      window.location.reload();
+                    } else {
+                      setErrorMsg(res.message);
+                      setLoading(false);
+                    }
+                  }}
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  setLoading(true);
+                  setErrorMsg('');
+                  const ok = await forceResetToOperaDB();
+                  if (ok) {
+                    alert('Banco de dados oficial do Opera carregado com sucesso!');
+                    window.location.reload();
+                  } else {
+                    setErrorMsg('Erro ao restaurar banco oficial.');
+                    setLoading(false);
+                  }
+                }}
+                className="flex-1 py-1.5 px-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-[11px] text-amber-300 flex items-center justify-center gap-1.5 transition-all text-center"
+              >
+                <span>🔄 Restaurar Banco Opera</span>
+              </button>
+            </div>
+            <div className="text-[10px] text-slate-500 text-center">
+              Você pode restaurar o banco oficial integrado ou subir o arquivo .zip de backup.
+            </div>
+          </div>
+
           {/* Quick info footer */}
           <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 text-center leading-relaxed">
             Ambiente seguro Tempero PraCasa. Todos os pedidos e estoques são sincronizados na nuvem.

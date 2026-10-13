@@ -103,29 +103,56 @@ export const AuditoriaModule: React.FC = () => {
       return;
     }
 
-    setRestoring(true);
-    try {
-      if (window.electronAPI && window.electronAPI.importBackupZip) {
+    if (window.electronAPI && window.electronAPI.importBackupZip) {
+      setRestoring(true);
+      try {
         const zipBytes = await window.electronAPI.importBackupZip();
         if (zipBytes) {
           const zip = await JSZip.loadAsync(new Uint8Array(zipBytes));
-          const dbFile = zip.file('pracasa.sqlite');
+          const dbFile = zip.file('pracasa.sqlite') || zip.file('pracasa_b64.txt');
           if (dbFile) {
-            const dbArray = await dbFile.async('uint8array');
-            await window.electronAPI.saveDatabaseFile(Array.from(dbArray));
-            alert('Banco de dados restaurado com sucesso! Reinicie o aplicativo para carregar os dados restaurados.');
+            if (dbFile.name === 'pracasa_b64.txt') {
+              const b64 = await dbFile.async('string');
+              localStorage.setItem('pracasa_db_binary', b64.trim());
+              localStorage.setItem('pracasa_opera_sync_v2', 'true');
+            } else {
+              const dbArray = await dbFile.async('uint8array');
+              await window.electronAPI.saveDatabaseFile(Array.from(dbArray));
+            }
+            alert('Banco de dados restaurado com sucesso!');
             window.location.reload();
           } else {
-            alert('Arquivo ZIP de backup inválido: não contém pracasa.sqlite');
+            alert('Arquivo ZIP de backup inválido: não contém pracasa.sqlite ou pracasa_b64.txt');
           }
         }
-      } else {
-        alert('Restauração por arquivo ZIP disponível no aplicativo desktop Electron.');
+      } catch (err: any) {
+        alert(`Erro ao restaurar backup: ${err.message}`);
+      } finally {
+        setRestoring(false);
       }
-    } catch (err: any) {
-      alert(`Erro ao restaurar backup: ${err.message}`);
-    } finally {
-      setRestoring(false);
+    } else {
+      // Web browser file picker
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.zip,.txt,.sqlite,.db';
+      input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+        setRestoring(true);
+        try {
+          const { restoreBackupFromFile } = await import('../utils/backupRestore');
+          const res = await restoreBackupFromFile(file);
+          alert(res.message);
+          if (res.success) {
+            window.location.reload();
+          }
+        } catch (err: any) {
+          alert(`Erro ao restaurar: ${err.message}`);
+        } finally {
+          setRestoring(false);
+        }
+      };
+      input.click();
     }
   };
 
