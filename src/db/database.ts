@@ -32,6 +32,22 @@ export async function getDB(): Promise<SqlJsDatabase> {
     }
   }
 
+  // Se não há dados salvos localmente, carrega o banco de dados oficial extraído do Opera
+  if (!savedData || savedData.length === 0) {
+    try {
+      const res = await fetch('/initial_database.sqlite');
+      if (res.ok) {
+        const arrayBuf = await res.arrayBuffer();
+        if (arrayBuf.byteLength > 1000) {
+          savedData = new Uint8Array(arrayBuf);
+          console.log(`[PraCasa DB] Banco oficial importado de /initial_database.sqlite (${savedData.length} bytes)!`);
+        }
+      }
+    } catch (e) {
+      console.warn('[PraCasa DB] Falha ao carregar banco inicial da web:', e);
+    }
+  }
+
   if (savedData && savedData.length > 0) {
     dbInstance = new SQL.Database(savedData);
     try {
